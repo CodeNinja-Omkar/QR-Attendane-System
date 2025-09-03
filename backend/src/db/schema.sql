@@ -8,7 +8,10 @@ CREATE TABLE IF NOT EXISTS students (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   email VARCHAR(150) UNIQUE NOT NULL,
-  roll_number VARCHAR(50) UNIQUE NOT NULL
+  roll_number VARCHAR(50) UNIQUE NOT NULL,
+  division VARCHAR(10),
+  dept VARCHAR(50),
+  year VARCHAR(10)
 );
 
 -- Session info (one per class)
@@ -29,3 +32,4 @@ CREATE TABLE IF NOT EXISTS attendance (
   FOREIGN KEY (session_id) REFERENCES sessions(id),
   UNIQUE KEY unique_attendance (student_id, session_id)
 );
+
