@@ -23,13 +23,14 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 
 -- Attendance records
+
 CREATE TABLE IF NOT EXISTS attendance (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  student_id INT NOT NULL,
   session_id INT NOT NULL,
+  student_id INT NOT NULL,
   scanned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (student_id) REFERENCES students(id),
-  FOREIGN KEY (session_id) REFERENCES sessions(id),
-  UNIQUE KEY unique_attendance (student_id, session_id)
+  UNIQUE KEY unique_attendance (session_id, student_id),
+  FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
 
