@@ -1,0 +1,37 @@
+
+  {
+    "name": "qr-attendance-backend",
+    "version": "1.0.0",
+    "description": "Backend for QR code attendance MVP (Node.js, Express, MySQL).",
+    "type": "module",
+    "main": "src/server.js",
+    "scripts": {
+      "dev": "nodemon src/server.js",
+      "start": "node src/server.js",
+      "lint": "echo \"(Add your linter of choice later)\""
+    },
+    "keywords": [
+      "express",
+      "mysql2",
+      "qr",
+      "attendance"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+      "cors": "^2.8.5",
+      "dotenv": "^17.2.2",
+      "express": "^5.1.0",
+      "helmet": "^8.1.0",
+      "morgan": "^1.10.1",
+      "mysql2": "^3.14.4",
+      "qrcode": "^1.5.4",
+      "uuid": "^11.1.0"
+    },
+    "devDependencies": {
+      "nodemon": "^3.1.10"
+    },
+    "engines": {
+      "node": ">=18"
+    }
+  }
