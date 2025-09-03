@@ -1,37 +1,46 @@
-// src/routes/attendance.routes.js
-// Routes for marking and viewing attendance
+// routes/attendanceRoutes.js
+import express from "express";
+import pool from "../db/index.js";
+import { verifyQR } from "../utils/qrGenerator.js";
 
-import { Router } from "express";
-import {
-  markAttendance,
-  getAttendanceBySession,
-} from "../models/attendance.model.js";
+const router = express.Router();
 
-const router = Router();
+/**
+ * Mark attendance by scanning QR
+ */
+router.post("/scan", async (req, res) => {
+  const { qrData } = req.body;
+  if (!qrData) return res.status(400).json({ error: "QR data required" });
 
-// Mark attendance (scanned QR)
-router.post("/", async (req, res, next) => {
+  // ✅ Verify QR authenticity
+  const verified = verifyQR(qrData);
+  if (!verified) return res.status(400).json({ error: "Invalid or tampered QR" });
+
+  const { session_id, student_id } = verified;
+
   try {
-    const { session_id, student_id } = req.body;
-    if (!session_id || !student_id) {
-      return res
-        .status(400)
-        .json({ error: "session_id and student_id required" });
+    // ✅ Check session exists
+    const [session] = await pool.query("SELECT id FROM sessions WHERE id = ?", [session_id]);
+    if (session.length === 0) {
+      return res.status(404).json({ error: "Session not found" });
     }
-    const result = await markAttendance({ session_id, student_id });
-    res.json(result);
-  } catch (err) {
-    next(err);
-  }
-});
 
-// Get attendance list for session
-router.get("/:session_id", async (req, res, next) => {
-  try {
-    const rows = await getAttendanceBySession(req.params.session_id);
-    res.json(rows);
+    // ✅ Check student exists
+    const [student] = await pool.query("SELECT id FROM students WHERE id = ?", [student_id]);
+    if (student.length === 0) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // ✅ Insert attendance
+    await pool.query(
+      "INSERT INTO attendance (session_id, student_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE scanned_at = CURRENT_TIMESTAMP",
+      [session_id, student_id]
+    );
+
+    res.json({ message: "Attendance marked", session_id, student_id });
   } catch (err) {
-    next(err);
+    console.error(err);
+    res.status(500).json({ error: "Failed to mark attendance" });
   }
 });
 
