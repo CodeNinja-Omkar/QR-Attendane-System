@@ -3,6 +3,7 @@
 import dotenv from "dotenv";
 import http from "http";
 import app from "./app.js";
+import { testDB } from "./db/index.js";
 
 // Load environment variables from .env
 dotenv.config();
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
 // Start listening
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+server.listen(PORT, async () => {
+  console.log(`✅ Server running at http://localhost:${PORT}`);
+  await testDB();
 });
